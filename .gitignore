@@ -14,3 +14,7 @@
 
 # Simulink Code Generation
 slprj/
+
+
+*.xls
+*.xlsx
