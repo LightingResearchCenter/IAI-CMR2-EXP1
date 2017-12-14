@@ -81,7 +81,9 @@ for iSub = 1:nSub
     activityReading = sleepState2idx(sleep,activityReading);
     
     %% Calculate data bounds and preallocate variables
-    time0 = max([lightReading.timeUTC(1), activityReading.timeUTC(1)]);
+    [time0, maxIdx] = max([lightReading.timeUTC(1), activityReading.timeUTC(1)]);
+    tempOffsets = [lightReading.timeOffset(1), activityReading.timeOffset(1)];
+    time0Offset = tempOffsets(maxIdx);
     timeF = lightReading.timeUTC(end);
     acrophaseWindow = 3*24*60*60; % Window size for acrophase, 3 days in seconds
     modelStep = 0.5*60*60; % Step size to advance model by, 1/2 hours in seconds
@@ -92,9 +94,9 @@ for iSub = 1:nSub
     CBTmin = nan(nStep,1);
     
     %% Calculate activity acrophase
-    AR4acrophase = activityReading(activityReading.timeUTC >= time0 & time0 <= time0 + acrophaseWindow,:);
+    AR4acrophase = activityReading(activityReading.timeUTC >= time0 & activityReading.timeUTC <= time0 + acrophaseWindow,:);
     [matT(1),matX(1),matXC(1)] = initialAcrophase(AR4acrophase);
-    CBTmin(1) = stateAtTime2RefPhaseTime(LRCutc2local(matT(1),activityReading.timeOffset(1)),matX(1),matXC(1))/3600; % Hour of day in local time
+    CBTmin(1) = stateAtTime2RefPhaseTime(LRCutc2local(matT(1),time0Offset),matX(1),matXC(1))/3600; % Hour of day in local time
     
     for iStep = 2:nStep
         t0  = matT(iStep-1);
