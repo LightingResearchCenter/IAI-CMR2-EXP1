@@ -1,4 +1,4 @@
-function newActivityReading = LRCgapFillActivityReading(activityReading)
+function newActivityReading = LRCgapFillActivityReading(activityReading, startTime)
 %LRCGAPFILL Resample data to evenly spaced increments filling gaps with 0s.
 %   expectedInc must be in the same units as timeUTC
 %   timeUTC and cs must be vertical vectors with at least 2 entries
@@ -6,6 +6,7 @@ function newActivityReading = LRCgapFillActivityReading(activityReading)
 
 if ~isdatetime(activityReading.timeUTC(1))
     activityReading.timeUTC = datetime(activityReading.timeUTC,'ConvertFrom','posixtime','TimeZone','UTC');
+    startTime = datetime(startTime,'ConvertFrom','posixtime','TimeZone','UTC');
     unixFlag = true;
 else
     unixFlag = false;
@@ -30,7 +31,7 @@ gapEnd = activityReading.timeUTC([false;gap]); % End time of each gap
 nGap = numel(gapStart); % Number of gaps
 
 % Create evenly spaced time array
-newActivityReading.timeUTC = (min(activityReading.timeUTC):expectedInc:max(activityReading.timeUTC))'; % Original method
+newActivityReading.timeUTC = (startTime:expectedInc:max(activityReading.timeUTC))'; % Original method
 % newTimeUTC = flip((timeUTC(end):-expectedInc:timeUTC(1))'); % 2017-02-03 method
 
 % Resample the data to evenly spaced increments

@@ -74,19 +74,21 @@ for iSub = 1:nSub
     lightReading = rgbc2cla(lightReading,'2016');
     
     % Fill in gaps
-    lightReading = LRCgapFillLightReading(lightReading,subList{iSub});
-    activityReading = LRCgapFillActivityReading(activityReading);
+    [time0, maxIdx] = max([lightReading.timeUTC(1), activityReading.timeUTC(1)]);
+    lightReading = LRCgapFillLightReading(lightReading,subList{iSub},time0);
+    activityReading = LRCgapFillActivityReading(activityReading,time0);
     
     lightReading    = adjustCS(glasses,lightReading);
     activityReading = sleepState2idx(sleep,activityReading);
     
     %% Calculate data bounds and preallocate variables
-    [time0, maxIdx] = max([lightReading.timeUTC(1), activityReading.timeUTC(1)]);
+    
     tempOffsets = [lightReading.timeOffset(1), activityReading.timeOffset(1)];
     time0Offset = tempOffsets(maxIdx);
     timeF = lightReading.timeUTC(end);
     acrophaseWindow = 3*24*60*60; % Window size for acrophase, 3 days in seconds
-    modelStep = 0.5*60*60; % Step size to advance model by, 1/2 hours in seconds
+%     modelStep = 0.5*60*60; % Step size to advance model by, 1/2 hours in seconds
+    modelStep = 6*60; % Step size to advance model by, 3 minutes
     nStep = ceil((timeF - time0)/modelStep)+1;
     matT  = nan(nStep,1);
     matX  = nan(nStep,1);
@@ -306,7 +308,8 @@ end
 function [dt, dlmo] = state2dlmo(t, x, xc)
 
 % Convert UNIX time to local datetime
-dt = datetime(t, 'ConvertFrom', 'posixtime', 'TimeZone', 'America/New_York');
+% dt = datetime(t, 'ConvertFrom', 'posixtime', 'TimeZone', 'America/New_York');
+dt = datetime(t, 'ConvertFrom', 'posixtime', 'TimeZone', 'UTC');
 
 % Convert datetime to local UNIX time
 dt2 = dt; % Copy dt
