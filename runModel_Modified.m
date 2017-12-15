@@ -308,8 +308,8 @@ end
 function [dt, dlmo] = state2dlmo(t, x, xc)
 
 % Convert UNIX time to local datetime
-% dt = datetime(t, 'ConvertFrom', 'posixtime', 'TimeZone', 'America/New_York');
 dt = datetime(t, 'ConvertFrom', 'posixtime', 'TimeZone', 'UTC');
+dt.TimeZone = 'America/New_York';
 
 % Convert datetime to local UNIX time
 dt2 = dt; % Copy dt
