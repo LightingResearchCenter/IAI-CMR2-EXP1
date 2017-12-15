@@ -98,7 +98,7 @@ for iSub = 1:nSub
     %% Calculate activity acrophase
     AR4acrophase = activityReading(activityReading.timeUTC >= time0 & activityReading.timeUTC <= time0 + acrophaseWindow,:);
     [matT(1),matX(1),matXC(1)] = initialAcrophase(AR4acrophase);
-    CBTmin(1) = stateAtTime2RefPhaseTime(LRCutc2local(matT(1),time0Offset),matX(1),matXC(1))/3600; % Hour of day in local time
+    CBTmin(1) = altState2Ref(LRCutc2local(matT(1),time0Offset),matX(1),matXC(1)); % Hour of day in local time
     
     for iStep = 2:nStep
         t0  = matT(iStep-1);
